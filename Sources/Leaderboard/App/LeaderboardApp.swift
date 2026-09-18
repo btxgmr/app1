@@ -13,7 +13,7 @@ public struct LeaderboardApp: App {
 
     public var body: some Scene {
         WindowGroup {
-            LeaderboardView()
+            MainTabView()
                 .preferredColorScheme(.dark)
         }
     }

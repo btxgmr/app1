@@ -2,7 +2,7 @@
 //  LeaderboardViewModel.swift
 //  Leaderboard
 //
-//  State Management, Persistence, Sorting and Animations for Apple Leaderboard
+//  State Management, Persistence, Sorting, Liquid Glass & Pro Status
 //
 
 import SwiftUI
@@ -13,9 +13,11 @@ public final class LeaderboardViewModel: ObservableObject {
     @Published public var players: [Player] = []
     @Published public var settings: LeaderboardSettings = LeaderboardSettings()
     @Published public var searchText: String = ""
+    @Published public var isProUnlocked: Bool = false
 
     private let playersStorageKey = "com.apple.fitness.leaderboard.players.v1"
     private let settingsStorageKey = "com.apple.fitness.leaderboard.settings.v1"
+    private let proStorageKey = "com.apple.fitness.leaderboard.pro.v1"
 
     public init() {
         loadData()
@@ -37,6 +39,23 @@ public final class LeaderboardViewModel: ObservableObject {
         }
     }
 
+    public var podiumPlayers: [Player] {
+        Array(filteredSortedPlayers.prefix(3))
+    }
+
+    public var totalScore: Int {
+        players.reduce(0) { $0 + $1.score }
+    }
+
+    public var averageScore: Int {
+        guard !players.isEmpty else { return 0 }
+        return totalScore / players.count
+    }
+
+    public var topScore: Int {
+        filteredSortedPlayers.first?.score ?? 0
+    }
+
     public func rank(for player: Player) -> Int {
         let sorted = players.sorted { $0.score > $1.score }
         guard let index = sorted.firstIndex(where: { $0.id == player.id }) else { return 1 }
@@ -51,15 +70,14 @@ public final class LeaderboardViewModel: ObservableObject {
         players[index].lastDelta = delta
         players[index].lastDeltaDate = Date()
 
-        // Reorder smoothly with Apple spring animation
-        withAnimation(.spring(response: 0.42, dampingFraction: 0.82)) {
-            // State mutation triggers list reordering
+        // Reorder smoothly with Apple spring animation to slide cards seamlessly
+        withAnimation(.spring(response: 0.45, dampingFraction: 0.78)) {
             saveData()
         }
     }
 
     public func addPlayer(_ player: Player) {
-        withAnimation(.spring(response: 0.42, dampingFraction: 0.82)) {
+        withAnimation(.spring(response: 0.45, dampingFraction: 0.78)) {
             players.append(player)
             saveData()
         }
@@ -82,8 +100,15 @@ public final class LeaderboardViewModel: ObservableObject {
         saveData()
     }
 
+    public func unlockPro() {
+        withAnimation(.spring(response: 0.5, dampingFraction: 0.75)) {
+            isProUnlocked = true
+            UserDefaults.standard.set(true, forKey: proStorageKey)
+        }
+    }
+
     public func resetToDefaults() {
-        withAnimation(.spring(response: 0.42, dampingFraction: 0.82)) {
+        withAnimation(.spring(response: 0.45, dampingFraction: 0.78)) {
             players = Self.seedPlayers
             settings = LeaderboardSettings()
             saveData()
@@ -108,6 +133,8 @@ public final class LeaderboardViewModel: ObservableObject {
     }
 
     private func loadData() {
+        isProUnlocked = UserDefaults.standard.bool(forKey: proStorageKey)
+
         if let data = UserDefaults.standard.data(forKey: settingsStorageKey),
            let decoded = try? JSONDecoder().decode(LeaderboardSettings.self, from: data) {
             self.settings = decoded

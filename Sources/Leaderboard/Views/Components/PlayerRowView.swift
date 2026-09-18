@@ -2,7 +2,7 @@
 //  PlayerRowView.swift
 //  Leaderboard
 //
-//  Glassmorphic iOS Squircle Row with Quick Actions and Rolling Numbers
+//  Liquid Glass iOS Athlete Row with Quick +/- and Rolling Numbers
 //
 
 import SwiftUI
@@ -31,27 +31,39 @@ public struct PlayerRowView: View {
         self.onDelete = onDelete
     }
 
+    private var accentColor: Color {
+        Color(hex: player.avatarColorHex)
+    }
+
     public var body: some View {
         VStack(spacing: 12) {
             HStack(spacing: 14) {
-                // Rank Badge
+                // Liquid Rank Badge
                 RankBadgeView(rank: rank)
 
-                // Avatar
+                // Liquid Avatar with glass border
                 ZStack {
                     Circle()
-                        .fill(Color(hex: player.avatarColorHex).opacity(0.25))
-                        .frame(width: 44, height: 44)
+                        .fill(accentColor.opacity(0.22))
+                        .frame(width: 46, height: 46)
                         .overlay(
                             Circle()
-                                .stroke(Color(hex: player.avatarColorHex).opacity(0.5), lineWidth: 1.5)
+                                .stroke(
+                                    LinearGradient(
+                                        colors: [accentColor.opacity(0.8), accentColor.opacity(0.2)],
+                                        startPoint: .topLeading,
+                                        endPoint: .bottomTrailing
+                                    ),
+                                    lineWidth: 1.5
+                                )
                         )
                     Text(player.avatarEmoji)
                         .font(.system(size: 22))
                 }
+                .shadow(color: accentColor.opacity(0.35), radius: 8, x: 0, y: 2)
 
-                // Name & Delta
-                VStack(alignment: .leading, spacing: 2) {
+                // Name & Delta Badge
+                VStack(alignment: .leading, spacing: 3) {
                     Text(player.name)
                         .font(.system(size: 17, weight: .bold, design: .rounded))
                         .foregroundColor(.white)
@@ -62,7 +74,7 @@ public struct PlayerRowView: View {
 
                 Spacer()
 
-                // Rolling Score and Unit Suffix
+                // Rolling Score with iOS 17 .numericText transition
                 HStack(alignment: .firstTextBaseline, spacing: 4) {
                     RollingDigitView(
                         value: player.score,
@@ -73,11 +85,11 @@ public struct PlayerRowView: View {
 
                     Text(unit)
                         .font(.system(size: 13, weight: .bold, design: .rounded))
-                        .foregroundColor(Color(white: 0.55))
+                        .foregroundColor(Color.white.opacity(0.55))
                 }
             }
 
-            // Quick Modification Buttons
+            // Quick Modification Liquid Buttons
             HStack(spacing: 8) {
                 ForEach(quickDeltas, id: \.self) { delta in
                     Button(action: {
@@ -85,12 +97,19 @@ public struct PlayerRowView: View {
                     }) {
                         Text("\(delta > 0 ? "+" : "")\(delta)")
                             .font(.system(size: 13, weight: .heavy, design: .rounded))
-                            .foregroundColor(delta > 0 ? Color(red: 0.19, green: 0.82, blue: 0.35) : Color(red: 1.0, green: 0.27, blue: 0.23))
+                            .foregroundColor(delta > 0 ? Color(red: 0.2, green: 0.88, blue: 0.4) : Color(red: 1.0, green: 0.32, blue: 0.28))
                             .frame(maxWidth: .infinity)
-                            .padding(.vertical, 7)
+                            .padding(.vertical, 8)
                             .background(
                                 Capsule()
-                                    .fill(Color(white: 0.16).opacity(0.7))
+                                    .fill(.ultraThinMaterial)
+                                    .overlay(
+                                        Capsule()
+                                            .strokeBorder(
+                                                (delta > 0 ? Color.green : Color.red).opacity(0.25),
+                                                lineWidth: 1
+                                            )
+                                    )
                             )
                     }
                     .buttonStyle(.plain)
@@ -99,27 +118,24 @@ public struct PlayerRowView: View {
                 Button(action: onDelete) {
                     Image(systemName: "trash")
                         .font(.system(size: 12, weight: .bold))
-                        .foregroundColor(Color(white: 0.45))
-                        .padding(.horizontal, 12)
-                        .padding(.vertical, 7)
+                        .foregroundColor(Color.white.opacity(0.45))
+                        .padding(.horizontal, 14)
+                        .padding(.vertical, 8)
                         .background(
                             Capsule()
-                                .fill(Color(white: 0.14).opacity(0.6))
+                                .fill(.ultraThinMaterial)
+                                .overlay(Capsule().strokeBorder(Color.white.opacity(0.12), lineWidth: 1))
                         )
                 }
                 .buttonStyle(.plain)
             }
         }
         .padding(16)
-        .background(
-            RoundedRectangle(cornerRadius: 24, style: .continuous)
-                .fill(Color(white: 0.11).opacity(0.85))
-                .overlay(
-                    RoundedRectangle(cornerRadius: 24, style: .continuous)
-                        .strokeBorder(Color.white.opacity(0.08), lineWidth: 1)
-                )
+        .liquidGlass(
+            cornerRadius: 22,
+            glowColor: accentColor.opacity(rank <= 3 ? 0.3 : 0.08),
+            borderOpacity: rank <= 3 ? 0.35 : 0.2
         )
-        .shadow(color: Color.black.opacity(0.35), radius: 10, x: 0, y: 4)
     }
 }
 
@@ -131,11 +147,11 @@ extension Color {
         Scanner(string: hex).scanHexInt64(&int)
         let a, r, g, b: UInt64
         switch hex.count {
-        case 3: // RGB (12-bit)
+        case 3:
             (a, r, g, b) = (255, (int >> 8) * 17, (int >> 4 & 0xF) * 17, (int & 0xF) * 17)
-        case 6: // RGB (24-bit)
+        case 6:
             (a, r, g, b) = (255, int >> 16, int >> 8 & 0xFF, int & 0xFF)
-        case 8: // ARGB (32-bit)
+        case 8:
             (a, r, g, b) = (int >> 24, int >> 16 & 0xFF, int >> 8 & 0xFF, int & 0xFF)
         default:
             (a, r, g, b) = (255, 128, 128, 128)
