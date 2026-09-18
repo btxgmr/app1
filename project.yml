@@ -1,0 +1,18 @@
+name: Leaderboard
+options:
+  bundleIdPrefix: com.leaderboard
+targets:
+  Leaderboard:
+    type: application
+    platform: iOS
+    deploymentTarget: "17.0"
+    sources:
+      - Sources/Leaderboard
+    settings:
+      PRODUCT_NAME: Leaderboard
+      PRODUCT_BUNDLE_IDENTIFIER: com.leaderboard.app
+      GENERATE_INFOPLIST_KEY_UILaunchScreen_Generation: YES
+      GENERATE_INFOPLIST_KEY_UISupportedInterfaceOrientations: "UIInterfaceOrientationPortrait"
+      CODE_SIGNING_ALLOWED: NO
+      CODE_SIGNING_REQUIRED: NO
+      CODE_SIGN_IDENTITY: ""
