@@ -14,6 +14,9 @@ targets:
       PRODUCT_BUNDLE_IDENTIFIER: com.leaderboard.app
       GENERATE_INFOPLIST_KEY_UILaunchScreen_Generation: YES
       GENERATE_INFOPLIST_KEY_UISupportedInterfaceOrientations: "UIInterfaceOrientationPortrait"
+      CODE_SIGN_STYLE: Manual
       CODE_SIGNING_ALLOWED: NO
       CODE_SIGNING_REQUIRED: NO
       CODE_SIGN_IDENTITY: ""
+      DEVELOPMENT_TEAM: ""
+      PROVISIONING_PROFILE_SPECIFIER: ""

@@ -22,6 +22,8 @@ jobs:
           xcodegen generate
           # Ensure project format is compatible with Xcode 15 & 16 (downgrade format 77 to 56)
           sed -i '' 's/objectVersion = 77;/objectVersion = 56;/g' Leaderboard.xcodeproj/project.pbxproj || true
+          # Switch ProvisioningStyle to Manual so Xcode does not expect an Apple Developer Provisioning Profile
+          sed -i '' 's/ProvisioningStyle = Automatic;/ProvisioningStyle = Manual;/g' Leaderboard.xcodeproj/project.pbxproj || true
           grep "objectVersion" Leaderboard.xcodeproj/project.pbxproj
 
       - name: Build Native iOS App
@@ -32,9 +34,12 @@ jobs:
             -configuration Release \
             -destination 'generic/platform=iOS' \
             -derivedDataPath ./build \
+            CODE_SIGN_STYLE=Manual \
             CODE_SIGNING_ALLOWED=NO \
             CODE_SIGNING_REQUIRED=NO \
-            CODE_SIGN_IDENTITY=""
+            CODE_SIGN_IDENTITY="" \
+            DEVELOPMENT_TEAM="" \
+            PROVISIONING_PROFILE_SPECIFIER=""
 
       - name: Package into IPA
         run: |
