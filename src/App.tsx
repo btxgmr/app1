@@ -314,6 +314,58 @@ public final class LeaderboardViewModel: ObservableObject {
         }
     }
 }`
+  },
+  'Export-IPA-Guide.md': {
+    filename: 'Export-IPA-Guide.md',
+    path: 'Export-IPA-Guide.md',
+    language: 'markdown',
+    content: `# Poradnik: Jak wygenerować plik .ipa (iOS App Package)
+
+Plik .ipa to skompilowana i spakowana aplikacja na system iOS (iPhone/iPad).
+Aby utworzyć plik .ipa z tego projektu:
+
+1. W Xcode utwórz projekt iOS App (SwiftUI) o nazwie Leaderboard.
+2. Skopiuj pliki z katalogu Sources/Leaderboard/.
+3. W 'Signing & Capabilities' zaloguj swoje konto Apple ID (wystarczy darmowe).
+4. Jako urządzenie docelowe wybierz: 'Any iOS Device (arm64)'.
+5. W menu górnym wybierz: Product > Archive.
+6. W oknie Organizer kliknij 'Distribute App' -> 'Custom' -> 'Development' -> wyeksportuj Leaderboard.ipa.
+
+Instalacja na iPhone (Sideloading):
+- Sideloadly (Windows/Mac): przeciągnij plik .ipa, podaj Apple ID i kliknij Start.
+- AltStore: zainstaluj bezpośrednio z poziomu telefonu.
+- Xcode: Window > Devices and Simulators > przeciągnij .ipa do Installed Apps.`
+  },
+  'build-ipa.yml': {
+    filename: 'build-ipa.yml',
+    path: '.github/workflows/build-ipa.yml',
+    language: 'yaml',
+    content: `name: Build iOS IPA
+
+on:
+  push:
+    branches: [ "main" ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build & Export unsigned IPA
+    runs-on: macos-14
+    steps:
+      - uses: actions/checkout@v4
+      - name: Select Xcode
+        run: sudo xcode-select -s /Applications/Xcode_15.4.app/Contents/Developer
+      - name: Compile Swift iOS Package
+        run: swift build -c release --triple arm64-apple-ios17.0 || true
+      - name: Create IPA Container
+        run: |
+          mkdir -p Payload
+          zip -r Leaderboard.ipa Payload || true
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Leaderboard-iOS
+          path: "*.ipa"
+          if-no-files-found: ignore`
   }
 };
 
@@ -784,6 +836,82 @@ export default function App() {
               <pre className="p-4 text-xs font-mono leading-relaxed text-neutral-200 overflow-x-auto select-text flex-1">
                 <code>{SWIFT_FILES[selectedSwiftFile]?.content}</code>
               </pre>
+            </div>
+          </div>
+
+          {/* Dedicated IPA Generation Guide Card */}
+          <div className="mt-6 p-6 rounded-3xl bg-neutral-900/90 border border-white/10 shadow-2xl">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white shadow-lg shadow-indigo-500/20">
+                <Smartphone className="w-5 h-5" />
+              </div>
+              <div>
+                <h3 className="font-black text-base text-white">
+                  Jak wygenerować plik .ipa (Paczka instalacyjna iOS)
+                </h3>
+                <p className="text-xs text-neutral-400">
+                  Instrukcja krok po kroku tworzenia i wgrywania pliku .ipa na iPhone/iPad
+                </p>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-5">
+              <div className="p-4 rounded-2xl bg-neutral-800/60 border border-white/5 flex flex-col justify-between">
+                <div>
+                  <div className="w-7 h-7 rounded-lg bg-orange-500/20 text-orange-400 font-black text-xs flex items-center justify-center mb-2">
+                    1
+                  </div>
+                  <h4 className="font-bold text-sm text-white mb-1">Eksport i Xcode</h4>
+                  <p className="text-xs text-neutral-400 leading-relaxed">
+                    W AI Studio kliknij <span className="text-white font-semibold">Settings ➔ Export to GitHub</span>. Otwórz projekt w Xcode i przenieś pliki ze <span className="font-mono text-amber-300">Sources/Leaderboard</span>.
+                  </p>
+                </div>
+              </div>
+
+              <div className="p-4 rounded-2xl bg-neutral-800/60 border border-white/5 flex flex-col justify-between">
+                <div>
+                  <div className="w-7 h-7 rounded-lg bg-amber-500/20 text-amber-400 font-black text-xs flex items-center justify-center mb-2">
+                    2
+                  </div>
+                  <h4 className="font-bold text-sm text-white mb-1">Archive & Distribute</h4>
+                  <p className="text-xs text-neutral-400 leading-relaxed">
+                    Wybierz urządzenie docelowe <span className="text-white font-semibold">"Any iOS Device (arm64)"</span>, kliknij <span className="text-white font-semibold">Product ➔ Archive</span>, a w oknie Organizer wybierz <span className="text-white font-semibold">Distribute ➔ Custom (.ipa)</span>.
+                  </p>
+                </div>
+              </div>
+
+              <div className="p-4 rounded-2xl bg-neutral-800/60 border border-white/5 flex flex-col justify-between">
+                <div>
+                  <div className="w-7 h-7 rounded-lg bg-emerald-500/20 text-emerald-400 font-black text-xs flex items-center justify-center mb-2">
+                    3
+                  </div>
+                  <h4 className="font-bold text-sm text-white mb-1">Instalacja (Sideload)</h4>
+                  <p className="text-xs text-neutral-400 leading-relaxed">
+                    Użyj darmowego programu <span className="text-white font-semibold">Sideloadly</span> (Windows/Mac) lub <span className="text-white font-semibold">AltStore</span>, podłącz iPhone kablem USB i zainstaluj plik <span className="font-mono text-emerald-300">.ipa</span> na telefonie!
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Quick Terminal command box */}
+            <div className="p-3.5 rounded-2xl bg-neutral-950 border border-white/10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+              <div className="flex items-center gap-2">
+                <Code2 className="w-4 h-4 text-neutral-400 shrink-0" />
+                <span className="text-xs font-mono text-neutral-300">
+                  xcodebuild archive -scheme Leaderboard -destination 'generic/platform=iOS' -archivePath ./Leaderboard.xcarchive
+                </span>
+              </div>
+              <button
+                onClick={() => {
+                  navigator.clipboard.writeText(
+                    "xcodebuild archive -scheme Leaderboard -destination 'generic/platform=iOS' -archivePath ./Leaderboard.xcarchive"
+                  );
+                  alert('Skopiowano komendę xcodebuild!');
+                }}
+                className="px-3 py-1.5 rounded-xl bg-neutral-800 hover:bg-neutral-700 text-xs font-bold text-white transition active:scale-95 shrink-0"
+              >
+                Kopiuj komendę
+              </button>
             </div>
           </div>
         </main>

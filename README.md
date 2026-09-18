@@ -88,6 +88,63 @@
 
 ---
 
+## 📦 Jak wygenerować plik `.ipa` (iOS App Package)?
+
+Plik `.ipa` to skompilowana i spakowana paczka instalacyjna na iPhone / iPad. Apple wymaga podpisania kodu certyfikatem (nawet darmowym kontem Apple ID).
+
+### Metoda 1: Przez Xcode (na macOS – zalecana i najprostsza)
+
+1. **Eksportuj repozytorium**:
+   - W Google AI Studio kliknij **Settings ➔ Export to GitHub** (lub pobierz ZIP).
+2. **Otwórz w Xcode**:
+   - Utwórz nowy projekt **iOS App (SwiftUI)** w Xcode, np. o nazwie `Leaderboard`.
+   - Skopiuj pliki z folderu `Sources/Leaderboard/` do projektu.
+3. **Podpisz aplikację (Signing)**:
+   - W zakładce projektu: **Signing & Capabilities** ➔ zaznacz *Automatically manage signing*.
+   - W polu **Team** wybierz swoje konto Apple ID (wystarczy darmowe konto osobiste).
+4. **Zbuduj Archiwum**:
+   - Jako urządzenie docelowe wybierz: **Any iOS Device (arm64)**.
+   - W menu górnym wybierz: **Product ➔ Archive**.
+5. **Wyeksportuj `.ipa`**:
+   - Po zakończeniu archiwizacji otworzy się okno **Organizer**.
+   - Kliknij **Distribute App** ➔ wybierz **Custom** ➔ **Development** lub **Ad Hoc** (albo App Store Connect dla TestFlight).
+   - Klikaj *Next* i wybierz folder docelowy — Xcode wygeneruje gotowy plik `Leaderboard.ipa`!
+
+---
+
+### Metoda 2: Z wiersza poleceń (Terminal na Macu)
+
+Jeśli wolisz terminal, możesz wygenerować `.ipa` jednym ciągiem poleceń `xcodebuild`:
+
+```bash
+# 1. Zbuduj archiwum xcarchive
+xcodebuild archive \
+  -scheme Leaderboard \
+  -destination 'generic/platform=iOS' \
+  -archivePath ./build/Leaderboard.xcarchive \
+  -allowProvisioningUpdates
+
+# 2. Wyeksportuj IPA
+xcodebuild -exportArchive \
+  -archivePath ./build/Leaderboard.xcarchive \
+  -exportOptionsPlist exportOptions.plist \
+  -exportPath ./build/IPA
+```
+
+Plik `.ipa` znajdzie się w katalogu `./build/IPA/Leaderboard.ipa`.
+
+---
+
+### Metoda 3: Jak zainstalować plik `.ipa` na swoim iPhonie?
+
+Gdy masz już plik `.ipa`:
+- **Sideloadly (PC Windows / Mac)**: Podłącz iPhone kablem USB, przeciągnij plik `.ipa`, wpisz Apple ID i kliknij *Start* — aplikacja pojawi się bezpośrednio na ekranie iPhone'a.
+- **AltStore (Mac / Windows)**: Oficjalny sklep sideloadingu dla iOS.
+- **Xcode Devices**: W Xcode wejdź w **Window ➔ Devices and Simulators** ➔ przeciągnij plik `.ipa` pod sekcję *Installed Apps*.
+- **TestFlight**: Jeśli masz płatne konto Apple Developer ($99/rok), wyślij archiwum bezpośrednio do App Store Connect i zainstaluj przez aplikację TestFlight.
+
+---
+
 ## 🛠 Wymagania systemowe
 - **Xcode 15.0+**
 - **iOS 17.0+** / **macOS 14.0+**
