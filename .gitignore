@@ -1,0 +1,21 @@
+node_modules/
+build/
+dist/
+coverage/
+.DS_Store
+*.log
+.env*
+!.env.example
+
+# Xcode and SPM
+.build/
+Packages/
+Package.pins
+Package.resolved
+*.xcodeproj/*
+!*.xcodeproj/project.pbxproj
+*.xcworkspace/*
+!*.xcworkspace/contents.xcworkspacedata
+DerivedData/
+.swiftpm/
+

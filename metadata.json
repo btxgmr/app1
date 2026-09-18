@@ -1,0 +1,8 @@
+{
+  "name": "iOS Leaderboard Swift",
+  "description": "Natywna tablica wyników w Swift / SwiftUI z fizyką Apple Fitness, rolling numbers, sortowaniem i architekturą repozytorium GitHub.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
+
+
