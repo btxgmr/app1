@@ -1,6 +1,7 @@
 name: Leaderboard
 options:
   bundleIdPrefix: com.leaderboard
+  xcodeVersion: "15.4"
 targets:
   Leaderboard:
     type: application
