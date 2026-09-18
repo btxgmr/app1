@@ -44,7 +44,7 @@ public struct Player: Identifiable, Codable, Equatable, Hashable {
         if remainder100 >= 11 && remainder100 <= 13 {
             suffix = "th"
         } else {
-            switch remainder10 = remainder10 {
+            switch remainder10 {
             case 1: suffix = "st"
             case 2: suffix = "nd"
             case 3: suffix = "rd"
