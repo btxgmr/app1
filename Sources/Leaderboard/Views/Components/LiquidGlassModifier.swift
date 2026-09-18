@@ -16,15 +16,15 @@ public struct LiquidGlassModifier: ViewModifier {
         content
             .background(
                 RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
-                    .fill(.ultraThinMaterial)
+                    .fill(Color(red: 0.05, green: 0.07, blue: 0.12).opacity(0.85))
                     .overlay(
-                        // Chromatic Specular Highlight (Liquid Glass effect)
+                        // Chromatic Specular Highlight (Liquid Glass effect without white haze)
                         LinearGradient(
                             colors: [
-                                Color.white.opacity(borderOpacity * 1.5),
-                                Color.white.opacity(0.04),
-                                Color.white.opacity(0.01),
-                                Color.white.opacity(borderOpacity * 0.8)
+                                Color.white.opacity(0.08),
+                                Color.clear,
+                                Color.clear,
+                                Color.white.opacity(0.03)
                             ],
                             startPoint: .topLeading,
                             endPoint: .bottomTrailing
@@ -36,10 +36,10 @@ public struct LiquidGlassModifier: ViewModifier {
                     .strokeBorder(
                         LinearGradient(
                             colors: [
-                                Color.white.opacity(borderOpacity * 1.8),
-                                Color.white.opacity(0.15),
-                                Color.white.opacity(0.05),
-                                Color.white.opacity(borderOpacity)
+                                Color.white.opacity(0.14),
+                                Color.white.opacity(0.04),
+                                Color.clear,
+                                Color.white.opacity(0.07)
                             ],
                             startPoint: .topLeading,
                             endPoint: .bottomTrailing
@@ -47,8 +47,8 @@ public struct LiquidGlassModifier: ViewModifier {
                         lineWidth: 1
                     )
             )
-            .shadow(color: Color.black.opacity(0.4), radius: 16, x: 0, y: 8)
-            .shadow(color: glowColor.opacity(0.15), radius: 24, x: 0, y: 0)
+            .shadow(color: Color.black.opacity(0.5), radius: 16, x: 0, y: 8)
+            .shadow(color: glowColor.opacity(0.12), radius: 24, x: 0, y: 0)
     }
 }
 
